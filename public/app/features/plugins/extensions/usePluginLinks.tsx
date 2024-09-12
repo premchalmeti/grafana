@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useObservable } from 'react-use';
 
 import { PluginExtensionLink, PluginExtensionTypes } from '@grafana/data';
+import { config } from '@grafana/runtime';
 import {
   UsePluginLinksOptions,
   UsePluginLinksResult,
@@ -16,6 +17,8 @@ import {
   getLinkExtensionPathWithTracking,
   getReadOnlyProxy,
 } from './utils';
+
+const isDevMode = config.buildInfo.env === 'development';
 
 // Returns an array of component extensions for the given extension point
 export function usePluginLinks({
