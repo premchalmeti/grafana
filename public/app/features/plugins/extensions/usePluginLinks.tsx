@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { useObservable } from 'react-use';
 
 import { PluginExtensionLink, PluginExtensionTypes } from '@grafana/data';
-import { config } from '@grafana/runtime';
 import {
   UsePluginLinksOptions,
   UsePluginLinksResult,
@@ -16,9 +15,8 @@ import {
   getLinkExtensionOverrides,
   getLinkExtensionPathWithTracking,
   getReadOnlyProxy,
+  isGrafanaDevMode,
 } from './utils';
-
-const isDevMode = config.buildInfo.env === 'development';
 
 // Returns an array of component extensions for the given extension point
 export function usePluginLinks({
@@ -30,6 +28,15 @@ export function usePluginLinks({
   const registryState = useObservable(registry.asObservable());
 
   return useMemo(() => {
+    // DEV mode can only change between browser refreshes
+    if (isGrafanaDevMode) {
+      console.error(`usePluginLinks();`);
+      return {
+        isLoading: false,
+        links: [],
+      };
+    }
+
     if (!registryState || !registryState[extensionPointId]) {
       return {
         isLoading: false,

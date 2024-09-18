@@ -16,8 +16,9 @@ import {
   PanelMenuItem,
   PluginExtensionAddedLinkConfig,
   urlUtil,
+  PluginContextType,
 } from '@grafana/data';
-import { reportInteraction } from '@grafana/runtime';
+import { reportInteraction, config } from '@grafana/runtime';
 import { Modal } from '@grafana/ui';
 import appEvents from 'app/core/app_events';
 // TODO: instead of depending on the service as a singleton, inject it as an argument from the React context
@@ -408,3 +409,27 @@ export const openAppInSideview = (pluginId: string) => sidecarService.openApp(pl
 export const closeAppInSideview = (pluginId: string) => sidecarService.closeApp(pluginId);
 
 export const isAppOpened = (pluginId: string) => sidecarService.isAppOpened(pluginId);
+
+// Comes from the `app_mode` setting in the Grafana config (defaults to "development")
+// Can be set with the `GF_DEFAULT_APP_MODE` environment variable
+export const isGrafanaDevMode = config.buildInfo.env === 'development';
+
+export const isExtensionPointIdInvalid = (extensionPointId: string, pluginContext: PluginContextType) => {
+  return false;
+};
+
+// Checks if the meta information is missing from the plugin's plugin.json file
+export const isExtensionPointMetaInfoMissing = (extensionPointId: string, pluginContext: PluginContextType) => {
+  return true;
+};
+
+// Checks if an exposed component that the plugin is depending on is missing from the `dependencies` in the plugin.json file
+export const isExposedComponentDependencyMissing = (extensionPointId: string, pluginContext: PluginContextType) => {
+  return true;
+};
+
+export const isAddedLinkMetaInfoMissing = () => {};
+
+export const isAddedComponentMetaInfoMissing = () => {};
+
+export const isExposedComponentMetaInfoMissing = () => {};
