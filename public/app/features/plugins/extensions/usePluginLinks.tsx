@@ -2,7 +2,7 @@ import { isString } from 'lodash';
 import { useMemo } from 'react';
 import { useObservable } from 'react-use';
 
-import { PluginExtensionLink, PluginExtensionTypes } from '@grafana/data';
+import { PluginExtensionLink, PluginExtensionTypes, usePluginContext } from '@grafana/data';
 import {
   UsePluginLinksOptions,
   UsePluginLinksResult,
@@ -15,6 +15,8 @@ import {
   getLinkExtensionOverrides,
   getLinkExtensionPathWithTracking,
   getReadOnlyProxy,
+  isExtensionPointIdInvalid,
+  isExtensionPointMetaInfoMissing,
   isGrafanaDevMode,
 } from './utils';
 
@@ -25,12 +27,22 @@ export function usePluginLinks({
   context,
 }: UsePluginLinksOptions): UsePluginLinksResult {
   const registry = useAddedLinksRegistry();
+  const pluginContext = usePluginContext();
   const registryState = useObservable(registry.asObservable());
 
   return useMemo(() => {
-    // DEV mode can only change between browser refreshes
-    if (isGrafanaDevMode) {
-      console.error(`usePluginLinks();`);
+    if (isGrafanaDevMode && isExtensionPointIdInvalid(extensionPointId, pluginContext)) {
+      console.error(`usePluginLinks("${extensionPointId}") - The extension point ID "${extensionPointId}" is invalid.`);
+      return {
+        isLoading: false,
+        links: [],
+      };
+    }
+
+    if (isGrafanaDevMode && isExtensionPointMetaInfoMissing(extensionPointId, pluginContext)) {
+      console.error(
+        `usePluginLinks("${extensionPointId}") - The extension point is missing from the "plugin.json" file.`
+      );
       return {
         isLoading: false,
         links: [],
@@ -90,5 +102,5 @@ export function usePluginLinks({
       isLoading: false,
       links: extensions,
     };
-  }, [context, extensionPointId, limitPerPlugin, registryState]);
+  }, [context, extensionPointId, limitPerPlugin, registryState, pluginContext]);
 }
