@@ -17,6 +17,9 @@ import {
   PluginExtensionAddedLinkConfig,
   urlUtil,
   PluginContextType,
+  PluginExtensionExposedComponentConfig,
+  PluginExtensionAddedComponentConfig,
+  compareArrayValues,
 } from '@grafana/data';
 import { reportInteraction, config } from '@grafana/runtime';
 import { Modal } from '@grafana/ui';
@@ -418,7 +421,7 @@ export const isExtensionPointIdInvalid = (extensionPointId: string, pluginContex
   const { id } = pluginContext.meta;
 
   if (!extensionPointId.startsWith(`${id}/`)) {
-    console.error(`The extension point id "${extensionPointId}" should be prefixed with your plugin id: "${id}/".`);
+    logWarning(`Extension point "${extensionPointId}" - the id should be prefixed with your plugin id ("${id}/").`);
     return true;
   }
 
@@ -432,7 +435,7 @@ export const isExtensionPointMetaInfoMissing = (extensionPointId: string, plugin
 
   if (!extensionPoints || !extensionPoints.find((ep) => ep.id === extensionPointId)) {
     console.error(
-      `Blocked - the extension point "${extensionPointId}" is not recorded in the "plugin.json" for "${pluginId}". Please add it under "extensions.extensionPoints[]".`
+      `Extension point "${extensionPointId}" - it's not recorded in the "plugin.json" for "${pluginId}". Please add it under "extensions.extensionPoints[]".`
     );
     return true;
   }
@@ -446,8 +449,8 @@ export const isExposedComponentDependencyMissing = (id: string, pluginContext: P
   const exposedComponentsDependencies = pluginContext.meta?.dependencies?.extensions?.exposedComponents;
 
   if (!exposedComponentsDependencies || !exposedComponentsDependencies.includes(id)) {
-    console.error(
-      `Blocked - the exposed component "${id}" is not recorded in the "plugin.json" for "${pluginId}". Please add it under "dependencies.extensions.exposedComponents[]".`
+    logWarning(
+      `Using exposed component "${id}" - it's not recorded in the "plugin.json" for "${pluginId}". Please add it under "dependencies.extensions.exposedComponents[]".`
     );
     return true;
   }
@@ -455,8 +458,106 @@ export const isExposedComponentDependencyMissing = (id: string, pluginContext: P
   return false;
 };
 
-export const isAddedLinkMetaInfoMissing = () => {};
+export const isAddedLinkMetaInfoMissing = (pluginId: string, metaInfo: PluginExtensionAddedLinkConfig) => {
+  const app = config.apps[pluginId];
+  const logPrefix = `Added link "${metaInfo.title}" -`;
+  const pluginJsonMetaInfoPath = 'extensions.addedLinks[]';
+  const pluginJsonMetaInfo = app ? app.extensions.addedComponents.find(({ title }) => title === metaInfo.title) : null;
 
-export const isAddedComponentMetaInfoMissing = () => {};
+  if (!app) {
+    logWarning(`${logPrefix} couldn't app plugin "${pluginId}"`);
+    return true;
+  }
 
-export const isExposedComponentMetaInfoMissing = () => {};
+  if (!pluginJsonMetaInfo) {
+    logWarning(`${logPrefix} not registered in the plugin.json under ${pluginJsonMetaInfoPath}.`);
+
+    return true;
+  }
+
+  const targets = Array.isArray(metaInfo.targets) ? metaInfo.targets : [metaInfo.targets];
+  if (!compareArrayValues(pluginJsonMetaInfo.targets, targets, (a, b) => a === b)) {
+    logWarning(`${logPrefix} the targets don't match with ones in the plugin.json under ${pluginJsonMetaInfoPath}.`);
+
+    return true;
+  }
+
+  if (pluginJsonMetaInfo.description !== metaInfo.description) {
+    logWarning(
+      `${logPrefix} the "description" doesn't match with one in the plugin.json under ${pluginJsonMetaInfoPath}.`
+    );
+
+    return true;
+  }
+
+  return false;
+};
+
+export const isAddedComponentMetaInfoMissing = (pluginId: string, metaInfo: PluginExtensionAddedComponentConfig) => {
+  const app = config.apps[pluginId];
+  const logPrefix = `Added component "${metaInfo.title}" -`;
+  const pluginJsonMetaInfoPath = 'extensions.addedComponents[]';
+  const pluginJsonMetaInfo = app ? app.extensions.addedComponents.find(({ title }) => title === metaInfo.title) : null;
+
+  if (!app) {
+    logWarning(`${logPrefix} couldn't app plugin "${pluginId}"`);
+    return true;
+  }
+
+  if (!pluginJsonMetaInfo) {
+    logWarning(`${logPrefix} not registered in the plugin.json under ${pluginJsonMetaInfoPath}.`);
+
+    return true;
+  }
+
+  const targets = Array.isArray(metaInfo.targets) ? metaInfo.targets : [metaInfo.targets];
+  if (!compareArrayValues(pluginJsonMetaInfo.targets, targets, (a, b) => a === b)) {
+    logWarning(`${logPrefix} the targets don't match with ones in the plugin.json under ${pluginJsonMetaInfoPath}.`);
+
+    return true;
+  }
+
+  if (pluginJsonMetaInfo.description !== metaInfo.description) {
+    logWarning(
+      `${logPrefix} the "description" doesn't match with one in the plugin.json under ${pluginJsonMetaInfoPath}.`
+    );
+
+    return true;
+  }
+
+  return false;
+};
+
+export const isExposedComponentMetaInfoMissing = (pluginId: string, metaInfo: PluginExtensionExposedComponentConfig) => {
+  const app = config.apps[pluginId];
+  const logPrefix = `Exposed component "${metaInfo.id}" -`;
+  const pluginJsonMetaInfoPath = 'extensions.exposedComponents[]';
+  const pluginJsonMetaInfo = app ? app.extensions.exposedComponents.find(({ id }) => id === metaInfo.id) : null;
+
+  if (!app) {
+    logWarning(`${logPrefix} couldn't find app plugin: "${pluginId}"`);
+    return true;
+  }
+
+  if (!pluginJsonMetaInfo) {
+    logWarning(`${logPrefix} not registered in the plugin.json under ${pluginJsonMetaInfoPath}.`);
+
+    return true;
+  }
+
+  if (pluginJsonMetaInfo.title !== metaInfo.title) {
+    logWarning(`${logPrefix} the "title" doesn't match with one in the plugin.json under ${pluginJsonMetaInfoPath}.`);
+
+    return true;
+  }
+
+  if (pluginJsonMetaInfo.description !== metaInfo.description) {
+    logWarning(
+      `${logPrefix} the "description" doesn't match with one in the plugin.json under ${pluginJsonMetaInfoPath}.`
+    );
+
+    return true;
+  }
+
+  return false;
+};
