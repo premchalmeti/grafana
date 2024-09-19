@@ -18,6 +18,8 @@ import {
   getThemeById,
   AngularMeta,
   PluginLoadingStrategy,
+  PluginDependencies,
+  PluginExtensions,
 } from '@grafana/data';
 
 export interface AzureSettings {
@@ -42,42 +44,8 @@ export type AppPluginConfig = {
   preload: boolean;
   angular: AngularMeta;
   loadingStrategy: PluginLoadingStrategy;
-  // Any extensions related features that the plugin depends on
-  dependencies: {
-    extensions: {
-      // A list of exposed component IDs
-      exposedComponents: string[];
-    };
-  };
-  extensions: {
-    // The component extensions that the plugin registers
-    addedComponents: Array<{
-      targets: string[];
-      title: string;
-      description: string;
-    }>;
-
-    // The link extensions that the plugin registers
-    addedLinks: Array<{
-      targets: string[];
-      title: string;
-      description: string;
-    }>;
-
-    // The React components that the plugin exposes
-    exposedComponents: Array<{
-      id: string;
-      title: string;
-      description: string;
-    }>;
-
-    // The extension points that the plugin provides
-    extensionPoints: Array<{
-      id: string;
-      title: string;
-      description: string;
-    }>;
-  };
+  dependencies: PluginDependencies;
+  extensions: PluginExtensions;
 };
 
 export type PreinstalledPlugin = {

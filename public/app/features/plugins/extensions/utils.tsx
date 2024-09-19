@@ -415,17 +415,44 @@ export const isAppOpened = (pluginId: string) => sidecarService.isAppOpened(plug
 export const isGrafanaDevMode = config.buildInfo.env === 'development';
 
 export const isExtensionPointIdInvalid = (extensionPointId: string, pluginContext: PluginContextType) => {
+  const { id } = pluginContext.meta;
+
+  if (!extensionPointId.startsWith(`${id}/`)) {
+    console.error(`The extension point id "${extensionPointId}" should be prefixed with your plugin id: "${id}/".`);
+    return true;
+  }
+
   return false;
 };
 
 // Checks if the meta information is missing from the plugin's plugin.json file
 export const isExtensionPointMetaInfoMissing = (extensionPointId: string, pluginContext: PluginContextType) => {
-  return true;
+  const pluginId = pluginContext.meta?.id;
+  const extensionPoints = pluginContext.meta?.extensions?.extensionPoints;
+
+  if (!extensionPoints || !extensionPoints.find((ep) => ep.id === extensionPointId)) {
+    console.error(
+      `Blocked - the extension point "${extensionPointId}" is not recorded in the "plugin.json" for "${pluginId}". Please add it under "extensions.extensionPoints[]".`
+    );
+    return true;
+  }
+
+  return false;
 };
 
 // Checks if an exposed component that the plugin is depending on is missing from the `dependencies` in the plugin.json file
-export const isExposedComponentDependencyMissing = (extensionPointId: string, pluginContext: PluginContextType) => {
-  return true;
+export const isExposedComponentDependencyMissing = (id: string, pluginContext: PluginContextType) => {
+  const pluginId = pluginContext.meta?.id;
+  const exposedComponentsDependencies = pluginContext.meta?.dependencies?.extensions?.exposedComponents;
+
+  if (!exposedComponentsDependencies || !exposedComponentsDependencies.includes(id)) {
+    console.error(
+      `Blocked - the exposed component "${id}" is not recorded in the "plugin.json" for "${pluginId}". Please add it under "dependencies.extensions.exposedComponents[]".`
+    );
+    return true;
+  }
+
+  return false;
 };
 
 export const isAddedLinkMetaInfoMissing = () => {};
