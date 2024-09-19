@@ -49,6 +49,17 @@ describe('getRuleOrigin', () => {
         preload: true,
         angular: { detected: false, hideDeprecation: false },
         loadingStrategy: PluginLoadingStrategy.script,
+        extensions: {
+          addedLinks: [],
+          addedComponents: [],
+          extensionPoints: [],
+          exposedComponents: [],
+        },
+        dependencies: {
+          extensions: {
+            exposedComponents: [],
+          },
+        },
       },
     };
     const rule = mockCombinedRule({

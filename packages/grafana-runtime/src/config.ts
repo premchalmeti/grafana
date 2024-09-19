@@ -42,6 +42,13 @@ export type AppPluginConfig = {
   preload: boolean;
   angular: AngularMeta;
   loadingStrategy: PluginLoadingStrategy;
+  // Any extensions related features that the plugin depends on
+  dependencies: {
+    extensions: {
+      // A list of exposed component IDs
+      exposedComponents: string[];
+    };
+  };
   extensions: {
     // The component extensions that the plugin registers
     addedComponents: Array<{
@@ -69,12 +76,6 @@ export type AppPluginConfig = {
       id: string;
       title: string;
       description: string;
-    }>;
-
-    // Any extensions related features that the plugin depends on
-    dependencies: Array<{
-      // A list of exposed component IDs
-      exposedComponents: string[];
     }>;
   };
 };
