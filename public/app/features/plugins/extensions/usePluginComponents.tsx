@@ -20,10 +20,12 @@ export function usePluginComponents<Props extends object = {}>({
   const pluginContext = usePluginContext();
 
   return useMemo(() => {
+    // For backwards compatibility we don't enable restrictions in production or when the hook is used in core Grafana.
+    const enableRestrictions = isGrafanaDevMode && pluginContext;
     const components: Array<React.ComponentType<Props>> = [];
     const extensionsByPlugin: Record<string, number> = {};
 
-    if (isGrafanaDevMode && isExtensionPointIdInvalid(extensionPointId, pluginContext)) {
+    if (enableRestrictions && isExtensionPointIdInvalid(extensionPointId, pluginContext)) {
       console.error(
         `usePluginComponents("${extensionPointId}") - The extension point ID "${extensionPointId}" is invalid.`
       );
@@ -33,7 +35,7 @@ export function usePluginComponents<Props extends object = {}>({
       };
     }
 
-    if (isGrafanaDevMode && isExtensionPointMetaInfoMissing(extensionPointId, pluginContext)) {
+    if (enableRestrictions && isExtensionPointMetaInfoMissing(extensionPointId, pluginContext)) {
       console.error(
         `usePluginComponents("${extensionPointId}") - The extension point is missing from the "plugin.json" file.`
       );

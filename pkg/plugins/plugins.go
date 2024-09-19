@@ -174,6 +174,26 @@ func ReadPluginJSON(reader io.Reader) (JSONData, error) {
 		plugin.Dependencies.GrafanaVersion = "*"
 	}
 
+	if len(plugin.Dependencies.Extensions.ExposedComponents) == 0 {
+		plugin.Dependencies.Extensions.ExposedComponents = make([]string, 0)
+	}
+
+	if len(plugin.Extensions.AddedLinks) == 0 {
+		plugin.Extensions.AddedLinks = []AddedLink{}
+	}
+
+	if len(plugin.Extensions.AddedComponents) == 0 {
+		plugin.Extensions.AddedComponents = []AddedComponent{}
+	}
+
+	if len(plugin.Extensions.ExposedComponents) == 0 {
+		plugin.Extensions.ExposedComponents = []ExposedComponent{}
+	}
+
+	if len(plugin.Extensions.ExtensionPoints) == 0 {
+		plugin.Extensions.ExtensionPoints = []ExtensionPoint{}
+	}
+
 	for _, include := range plugin.Includes {
 		if include.Role == "" {
 			include.Role = org.RoleViewer

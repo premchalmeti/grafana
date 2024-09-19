@@ -31,7 +31,10 @@ export function usePluginLinks({
   const registryState = useObservable(registry.asObservable());
 
   return useMemo(() => {
-    if (isGrafanaDevMode && isExtensionPointIdInvalid(extensionPointId, pluginContext)) {
+    // For backwards compatibility we don't enable restrictions in production or when the hook is used in core Grafana.
+    const enableRestrictions = isGrafanaDevMode && pluginContext;
+
+    if (enableRestrictions && isExtensionPointIdInvalid(extensionPointId, pluginContext)) {
       console.error(`usePluginLinks("${extensionPointId}") - The extension point ID "${extensionPointId}" is invalid.`);
       return {
         isLoading: false,
@@ -39,7 +42,7 @@ export function usePluginLinks({
       };
     }
 
-    if (isGrafanaDevMode && isExtensionPointMetaInfoMissing(extensionPointId, pluginContext)) {
+    if (enableRestrictions && isExtensionPointMetaInfoMissing(extensionPointId, pluginContext)) {
       console.error(
         `usePluginLinks("${extensionPointId}") - The extension point is missing from the "plugin.json" file.`
       );

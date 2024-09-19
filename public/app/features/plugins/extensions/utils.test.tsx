@@ -396,7 +396,7 @@ describe('Plugin Extensions / Utils', () => {
       const ModalContent = () => {
         const context = usePluginContext();
 
-        return <div>Version: {context.meta.info.version}</div>;
+        return <div>Version: {context!.meta.info.version}</div>;
       };
 
       openModal({
@@ -415,13 +415,13 @@ describe('Plugin Extensions / Utils', () => {
     };
 
     const ExampleComponent = (props: ExampleComponentProps) => {
-      const { meta } = usePluginContext();
+      const pluginContext = usePluginContext();
 
       const audience = props.audience || 'Grafana';
 
       return (
         <div>
-          <h1>Hello {audience}!</h1> Version: {meta.info.version}
+          <h1>Hello {audience}!</h1> Version: {pluginContext!.meta.info.version}
         </div>
       );
     };

@@ -111,6 +111,9 @@ export interface PluginDependencies {
   grafanaDependency?: string;
   grafanaVersion: string;
   plugins: PluginDependencyInfo[];
+  extensions: {
+    exposedComponents: string[];
+  };
 }
 
 export enum PluginIncludeType {

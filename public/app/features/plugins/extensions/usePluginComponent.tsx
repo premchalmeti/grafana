@@ -15,7 +15,10 @@ export function usePluginComponent<Props extends object = {}>(id: string): UsePl
   const pluginContext = usePluginContext();
 
   return useMemo(() => {
-    if (isGrafanaDevMode && isExposedComponentDependencyMissing(id, pluginContext)) {
+    // For backwards compatibility we don't enable restrictions in production or when the hook is used in core Grafana.
+    const enableRestrictions = isGrafanaDevMode && pluginContext;
+
+    if (enableRestrictions && isExposedComponentDependencyMissing(id, pluginContext)) {
       console.error(
         `usePluginComponent("${id}") - The exposed component ("${id}") is missing from the dependencies[] in the "plugin.json" file.`
       );

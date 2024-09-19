@@ -42,10 +42,10 @@ func (e DuplicateError) Is(err error) bool {
 }
 
 type Dependencies struct {
-	GrafanaDependency string                   `json:"grafanaDependency"`
-	GrafanaVersion    string                   `json:"grafanaVersion"`
-	Plugins           []Dependency             `json:"plugins"`
-	Extensions        []ExtensionsDependencies `json:"extensions"`
+	GrafanaDependency string                 `json:"grafanaDependency"`
+	GrafanaVersion    string                 `json:"grafanaVersion"`
+	Plugins           []Dependency           `json:"plugins"`
+	Extensions        ExtensionsDependencies `json:"extensions"`
 }
 
 type Extensions struct {
