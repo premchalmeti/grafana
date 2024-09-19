@@ -56,6 +56,8 @@ describe('getRuleOrigin', () => {
           exposedComponents: [],
         },
         dependencies: {
+          grafanaVersion: '',
+          plugins: [],
           extensions: {
             exposedComponents: [],
           },

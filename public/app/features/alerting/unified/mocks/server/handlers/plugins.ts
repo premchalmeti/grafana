@@ -26,6 +26,8 @@ export const getPluginsHandler = (pluginsArray: PluginMeta[] = plugins) => {
         exposedComponents: [],
       },
       dependencies: {
+        grafanaVersion: '',
+        plugins: [],
         extensions: {
           exposedComponents: [],
         },
