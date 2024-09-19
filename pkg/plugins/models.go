@@ -42,9 +42,45 @@ func (e DuplicateError) Is(err error) bool {
 }
 
 type Dependencies struct {
-	GrafanaDependency string       `json:"grafanaDependency"`
-	GrafanaVersion    string       `json:"grafanaVersion"`
-	Plugins           []Dependency `json:"plugins"`
+	GrafanaDependency string                   `json:"grafanaDependency"`
+	GrafanaVersion    string                   `json:"grafanaVersion"`
+	Plugins           []Dependency             `json:"plugins"`
+	Extensions        []ExtensionsDependencies `json:"extensions"`
+}
+
+type Extensions struct {
+	AddedLinks        []AddedLink        `json:"addedLinks"`
+	AddedComponents   []AddedComponent   `json:"addedComponents"`
+	ExposedComponents []ExposedComponent `json:"exposedComponents"`
+	ExtensionPoints   []ExtensionPoint   `json:"extensionPoints"`
+}
+
+type AddedLink struct {
+	Targets     []string `json:"targets"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+}
+
+type AddedComponent struct {
+	Targets     []string `json:"targets"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+}
+
+type ExposedComponent struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type ExtensionPoint struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type ExtensionsDependencies struct {
+	ExposedComponents []string `json:"exposedComponents"`
 }
 
 type Includes struct {
@@ -234,6 +270,8 @@ type AppDTO struct {
 	Preload         bool            `json:"preload"`
 	Angular         AngularMeta     `json:"angular"`
 	LoadingStrategy LoadingStrategy `json:"loadingStrategy"`
+	Extensions      Extensions      `json:"extensions"`
+	Dependencies    Dependencies    `json:"dependencies"`
 }
 
 const (

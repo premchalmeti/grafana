@@ -42,6 +42,41 @@ export type AppPluginConfig = {
   preload: boolean;
   angular: AngularMeta;
   loadingStrategy: PluginLoadingStrategy;
+  extensions: {
+    // The component extensions that the plugin registers
+    addedComponents: Array<{
+      targets: string[];
+      title: string;
+      description: string;
+    }>;
+
+    // The link extensions that the plugin registers
+    addedLinks: Array<{
+      targets: string[];
+      title: string;
+      description: string;
+    }>;
+
+    // The React components that the plugin exposes
+    exposedComponents: Array<{
+      id: string;
+      title: string;
+      description: string;
+    }>;
+
+    // The extension points that the plugin provides
+    extensionPoints: Array<{
+      id: string;
+      title: string;
+      description: string;
+    }>;
+
+    // Any extensions related features that the plugin depends on
+    dependencies: Array<{
+      // A list of exposed component IDs
+      exposedComponents: string[];
+    }>;
+  };
 };
 
 export type PreinstalledPlugin = {
