@@ -73,7 +73,7 @@ export class AddedLinksRegistry extends Registry<AddedLinkRegistryItem[], Plugin
         continue;
       }
 
-      if (isAddedLinkMetaInfoMissing(pluginId, config)) {
+      if (pluginId !== 'grafana' && isAddedLinkMetaInfoMissing(pluginId, config)) {
         continue;
       }
 

@@ -460,12 +460,12 @@ export const isExposedComponentDependencyMissing = (id: string, pluginContext: P
 
 export const isAddedLinkMetaInfoMissing = (pluginId: string, metaInfo: PluginExtensionAddedLinkConfig) => {
   const app = config.apps[pluginId];
-  const logPrefix = `Added link "${metaInfo.title}" -`;
+  const logPrefix = `Added-link "${metaInfo.title}" from "${pluginId}" -`;
   const pluginJsonMetaInfoPath = 'extensions.addedLinks[]';
   const pluginJsonMetaInfo = app ? app.extensions.addedComponents.find(({ title }) => title === metaInfo.title) : null;
 
   if (!app) {
-    logWarning(`${logPrefix} couldn't app plugin "${pluginId}"`);
+    logWarning(`${logPrefix} couldn't find app plugin "${pluginId}"`);
     return true;
   }
 
