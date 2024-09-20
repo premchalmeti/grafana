@@ -1,0 +1,2125 @@
+{
+  "kind": "APIGroupDiscoveryList",
+  "apiVersion": "apidiscovery.k8s.io/v2",
+  "metadata": {},
+  "items": [
+    {
+      "metadata": {
+        "name": "apiregistration.k8s.io",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v1",
+          "resources": [
+            {
+              "resource": "apiservices",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "APIService"
+              },
+              "scope": "Cluster",
+              "singularResource": "apiservice",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ],
+              "categories": ["api-extensions"],
+              "subresources": [
+                {
+                  "subresource": "status",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "APIService"
+                  },
+                  "verbs": ["get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "alertmanager.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["alertmanager-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "proxy",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "update"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "azure-monitor.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-azure-monitor-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "cloudwatch.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["cloudwatch-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "dashboard.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["dashboard-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "dashboard.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "dashboards",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "Dashboard"
+              },
+              "scope": "Namespaced",
+              "singularResource": "dashboard",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ],
+              "subresources": [
+                {
+                  "subresource": "dto",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "DashboardWithAccessInfo"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "history",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "PartialObjectMetadataList"
+                  },
+                  "verbs": ["get"]
+                }
+              ]
+            },
+            {
+              "resource": "librarypanels",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "LibraryPanel"
+              },
+              "scope": "Namespaced",
+              "singularResource": "librarypanel",
+              "verbs": ["get", "list"]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "dashboardsnapshot.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "dashboardsnapshots",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DashboardSnapshot"
+              },
+              "scope": "Namespaced",
+              "singularResource": "dashboardsnapshot",
+              "verbs": ["delete", "get", "list"],
+              "subresources": [
+                {
+                  "subresource": "body",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "FullDashboardSnapshot"
+                  },
+                  "verbs": ["get"]
+                }
+              ]
+            },
+            {
+              "resource": "options",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "SharingOptions"
+              },
+              "scope": "Namespaced",
+              "singularResource": "options",
+              "verbs": ["get", "list"]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "elasticsearch.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["elasticsearch-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "featuretoggle.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "features",
+              "responseKind": { "group": "", "version": "", "kind": "Feature" },
+              "scope": "Cluster",
+              "singularResource": "feature",
+              "verbs": ["get", "list"]
+            },
+            {
+              "resource": "featuretoggles",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "FeatureToggles"
+              },
+              "scope": "Namespaced",
+              "singularResource": "featuretoggle",
+              "verbs": ["get", "list"]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "googlesheets.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-googlesheets-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "grafana.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "graphite.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["graphite-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": { "name": "iam.grafana.app", "creationTimestamp": null },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "display",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "IdentityDisplayResults"
+              },
+              "scope": "Namespaced",
+              "singularResource": "identitydisplay",
+              "verbs": ["get"]
+            },
+            {
+              "resource": "serviceaccounts",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "ServiceAccount"
+              },
+              "scope": "Namespaced",
+              "singularResource": "serviceaccount",
+              "verbs": ["get", "list"],
+              "subresources": [
+                {
+                  "subresource": "tokens",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "UserTeamList"
+                  },
+                  "verbs": ["get"]
+                }
+              ]
+            },
+            {
+              "resource": "ssosettings",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "SSOSetting"
+              },
+              "scope": "Namespaced",
+              "singularResource": "ssosetting",
+              "verbs": ["delete", "get", "list", "patch", "update"]
+            },
+            {
+              "resource": "teambindings",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "TeamBinding"
+              },
+              "scope": "Namespaced",
+              "singularResource": "teambinding",
+              "verbs": ["get", "list"]
+            },
+            {
+              "resource": "teams",
+              "responseKind": { "group": "", "version": "", "kind": "Team" },
+              "scope": "Namespaced",
+              "singularResource": "team",
+              "verbs": ["get", "list"],
+              "subresources": [
+                {
+                  "subresource": "members",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "TeamMemberList"
+                  },
+                  "verbs": ["get"]
+                }
+              ]
+            },
+            {
+              "resource": "users",
+              "responseKind": { "group": "", "version": "", "kind": "User" },
+              "scope": "Namespaced",
+              "singularResource": "user",
+              "verbs": ["get", "list"],
+              "subresources": [
+                {
+                  "subresource": "teams",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "UserTeamList"
+                  },
+                  "verbs": ["get"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "influxdb.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["influxdb-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "iot-twinmaker.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-iot-twinmaker-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "jaeger.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["jaeger-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "loki.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["loki-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "mixed.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["mixed-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "mqtt.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-mqtt-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "mssql.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["mssql-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "mysql.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["mysql-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "opentsdb.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["opentsdb-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "parca.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["parca-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": { "name": "peakq.grafana.app", "creationTimestamp": null },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "querytemplates",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "QueryTemplate"
+              },
+              "scope": "Namespaced",
+              "singularResource": "querytemplate",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ],
+              "subresources": [
+                {
+                  "subresource": "render",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "RenderedQuery"
+                  },
+                  "verbs": ["get"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": { "name": "playlist.grafana.app", "creationTimestamp": null },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "playlists",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "Playlist"
+              },
+              "scope": "Namespaced",
+              "singularResource": "playlist",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update"
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "postgresql.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-postgresql-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "prometheus.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["prometheus-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "proxy",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            },
+            {
+              "resource": "querytypes",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "QueryTypeDefinition"
+              },
+              "scope": "Cluster",
+              "singularResource": "querytype",
+              "verbs": ["get", "list"],
+              "subresources": [
+                {
+                  "subresource": "validate",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataRequest"
+                  },
+                  "verbs": ["create"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "pyroscope.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-pyroscope-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": { "name": "query.grafana.app", "creationTimestamp": null },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "datasourceapiservers",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceApiServer"
+              },
+              "scope": "Cluster",
+              "singularResource": "datasourceapiserver",
+              "verbs": ["list"]
+            },
+            {
+              "resource": "query",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "QueryDataResponse"
+              },
+              "scope": "Namespaced",
+              "singularResource": "QueryResults",
+              "verbs": ["create"]
+            },
+            {
+              "resource": "querytypes",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "QueryTypeDefinition"
+              },
+              "scope": "Cluster",
+              "singularResource": "querytype",
+              "verbs": ["get", "list"],
+              "subresources": [
+                {
+                  "subresource": "validate",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataRequest"
+                  },
+                  "verbs": ["create"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "reporting.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "reports",
+              "responseKind": { "group": "", "version": "", "kind": "Report" },
+              "scope": "Namespaced",
+              "singularResource": "report",
+              "verbs": ["get", "list"]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "ryantxu-noaa.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["ryantxu-noaa-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": { "name": "scope.grafana.app", "creationTimestamp": null },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "scope_dashboard_bindings",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "FindScopeDashboardBindingsResults"
+              },
+              "scope": "Namespaced",
+              "singularResource": "FindScopeDashboardsResult",
+              "verbs": ["get"]
+            },
+            {
+              "resource": "scope_node_children",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "FindScopeNodeChildrenResults"
+              },
+              "scope": "Namespaced",
+              "singularResource": "FindScopeNodeChildrenResults",
+              "verbs": ["get"]
+            },
+            {
+              "resource": "scopedashboardbindings",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "ScopeDashboardBinding"
+              },
+              "scope": "Namespaced",
+              "singularResource": "scopedashboardbinding",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ],
+              "subresources": [
+                {
+                  "subresource": "status",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "ScopeDashboardBinding"
+                  },
+                  "verbs": ["get", "patch", "update"]
+                }
+              ]
+            },
+            {
+              "resource": "scopenodes",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "ScopeNode"
+              },
+              "scope": "Namespaced",
+              "singularResource": "scopenode",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ]
+            },
+            {
+              "resource": "scopes",
+              "responseKind": { "group": "", "version": "", "kind": "Scope" },
+              "scope": "Namespaced",
+              "singularResource": "scope",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "search.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-search-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": { "name": "service.grafana.app", "creationTimestamp": null },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "externalnames",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "ExternalName"
+              },
+              "scope": "Namespaced",
+              "singularResource": "externalname",
+              "verbs": [
+                "create",
+                "delete",
+                "deletecollection",
+                "get",
+                "list",
+                "patch",
+                "update",
+                "watch"
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "stackdriver.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["stackdriver-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "tempo.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["tempo-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "testdata.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["grafana-testdata-datasource-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            },
+            {
+              "resource": "querytypes",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "QueryTypeDefinition"
+              },
+              "scope": "Cluster",
+              "singularResource": "querytype",
+              "verbs": ["get", "list"],
+              "subresources": [
+                {
+                  "subresource": "validate",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataRequest"
+                  },
+                  "verbs": ["create"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "name": "zipkin.datasource.grafana.app",
+        "creationTimestamp": null
+      },
+      "versions": [
+        {
+          "version": "v0alpha1",
+          "resources": [
+            {
+              "resource": "connections",
+              "responseKind": {
+                "group": "",
+                "version": "",
+                "kind": "DataSourceConnection"
+              },
+              "scope": "Namespaced",
+              "singularResource": "connection",
+              "verbs": ["get", "list"],
+              "shortNames": ["zipkin-connection"],
+              "subresources": [
+                {
+                  "subresource": "health",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "HealthCheckResult"
+                  },
+                  "verbs": ["get"]
+                },
+                {
+                  "subresource": "query",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "QueryDataResponse"
+                  },
+                  "verbs": ["create"]
+                },
+                {
+                  "subresource": "resource",
+                  "responseKind": {
+                    "group": "",
+                    "version": "",
+                    "kind": "Status"
+                  },
+                  "verbs": ["create", "delete", "get", "patch", "update"]
+                }
+              ]
+            }
+          ],
+          "freshness": "Current"
+        }
+      ]
+    }
+  ]
+}
