@@ -4,48 +4,45 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// When writing values, only one property is valid at a time
-// When reading, GUID will always be set, the Value+Ref *may* be set
-type SecureValue struct {
-	// GUID is a unique identifier for this exact field
-	// it must match the same group+resource+namespace+name where it was created
-	GUID string `json:"guid,omitempty"`
-
-	// The raw non-encrypted value
-	// Used when writing new values, or reading decrypted values
-	Value string `json:"value,omitempty"`
-
-	// // Used when linking this value to a known (and authorized) reference id
-	// // Enterprise only????
-	// Ref string `json:"ref,omitempty"`
-}
-
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type SecureValues struct {
+type SecureValue struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec SecureValuesSpec `json:"spec,omitempty"`
+	Spec SecureValueSpec `json:"spec,omitempty"`
 }
 
-type SecureValuesSpec struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
+type SecureValueSpec struct {
+	// Visible title for this secret
+	Title string `json:"title"`
 
-	// Values
-	// These are not returned in k8s get/list responses
-	Values map[string]SecureValue `json:"values"`
+	// The raw value is only valid for write.  Read/List will always be empty
+	// Writing with an empty value will always fail
+	Value string `json:"value,omitempty"`
 
-	// List of groups authorized to decrypt these values
-	// support wildcards?
-	// will be compared to the access token when trying to decrypt
-	AuthorizedApps []string `json:"authorized"`
+	// The APIs that are allowed to decrypt this secret
+	APIs []string `json:"apis"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-type SecureValuesList struct {
+type SecureValueList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	Items []SecureValues `json:"items,omitempty"`
+	Items []SecureValue `json:"items,omitempty"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+type SecureValueActivityList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+
+	Items []SecureValueActivity `json:"items,omitempty"`
+}
+
+type SecureValueActivity struct {
+	Timestamp metav1.Timestamp `json:"timestamp"`
+	Action    string           `json:"action"` // CREATE, UPDATE, DELETE, etc
+	Identity  string           `json:"identity"`
+	Details   string           `json:"details,omitempty"`
 }

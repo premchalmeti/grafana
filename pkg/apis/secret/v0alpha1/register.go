@@ -15,16 +15,16 @@ const (
 )
 
 var SecureValuesResourceInfo = utils.NewResourceInfo(GROUP, VERSION,
-	"securevalues", "securevalues", "SecureValues",
-	func() runtime.Object { return &SecureValues{} },
-	func() runtime.Object { return &SecureValuesList{} },
+	"securevalue", "securevalues", "SecureValue",
+	func() runtime.Object { return &SecureValue{} },
+	func() runtime.Object { return &SecureValueList{} },
 	utils.TableColumns{
 		Definition: []metav1.TableColumnDefinition{
 			{Name: "Name", Type: "string", Format: "name"},
 			{Name: "Title", Type: "string", Format: "string", Description: "The display name"},
 		},
 		Reader: func(obj any) ([]interface{}, error) {
-			r, ok := obj.(*SecureValues)
+			r, ok := obj.(*SecureValue)
 			if ok {
 				return []interface{}{
 					r.Name,

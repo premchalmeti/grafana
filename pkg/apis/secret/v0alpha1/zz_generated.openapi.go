@@ -14,41 +14,13 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue":      schema_pkg_apis_secret_v0alpha1_SecureValue(ref),
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValues":     schema_pkg_apis_secret_v0alpha1_SecureValues(ref),
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValuesList": schema_pkg_apis_secret_v0alpha1_SecureValuesList(ref),
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValuesSpec": schema_pkg_apis_secret_v0alpha1_SecureValuesSpec(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue":     schema_pkg_apis_secret_v0alpha1_SecureValue(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueList": schema_pkg_apis_secret_v0alpha1_SecureValueList(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueSpec": schema_pkg_apis_secret_v0alpha1_SecureValueSpec(ref),
 	}
 }
 
 func schema_pkg_apis_secret_v0alpha1_SecureValue(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Description: "When writing values, only one property is valid at a time When reading, GUID will always be set, the Value+Ref *may* be set",
-				Type:        []string{"object"},
-				Properties: map[string]spec.Schema{
-					"guid": {
-						SchemaProps: spec.SchemaProps{
-							Description: "GUID is a unique identifier for this exact field it must match the same group+resource+namespace+name where it was created",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-					"value": {
-						SchemaProps: spec.SchemaProps{
-							Description: "The raw non-encrypted value Used when writing new values, or reading decrypted values",
-							Type:        []string{"string"},
-							Format:      "",
-						},
-					},
-				},
-			},
-		},
-	}
-}
-
-func schema_pkg_apis_secret_v0alpha1_SecureValues(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -77,18 +49,18 @@ func schema_pkg_apis_secret_v0alpha1_SecureValues(ref common.ReferenceCallback) 
 					"spec": {
 						SchemaProps: spec.SchemaProps{
 							Default: map[string]interface{}{},
-							Ref:     ref("github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValuesSpec"),
+							Ref:     ref("github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueSpec"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValuesSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
 	}
 }
 
-func schema_pkg_apis_secret_v0alpha1_SecureValuesList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+func schema_pkg_apis_secret_v0alpha1_SecureValueList(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -121,49 +93,6 @@ func schema_pkg_apis_secret_v0alpha1_SecureValuesList(ref common.ReferenceCallba
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
 										Default: map[string]interface{}{},
-										Ref:     ref("github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValues"),
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		Dependencies: []string{
-			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValues", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
-	}
-}
-
-func schema_pkg_apis_secret_v0alpha1_SecureValuesSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
-				Properties: map[string]spec.Schema{
-					"title": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
-					"description": {
-						SchemaProps: spec.SchemaProps{
-							Default: "",
-							Type:    []string{"string"},
-							Format:  "",
-						},
-					},
-					"values": {
-						SchemaProps: spec.SchemaProps{
-							Description: "Values These are not returned in k8s get/list responses",
-							Type:        []string{"object"},
-							AdditionalProperties: &spec.SchemaOrBool{
-								Allows: true,
-								Schema: &spec.Schema{
-									SchemaProps: spec.SchemaProps{
-										Default: map[string]interface{}{},
 										Ref:     ref("github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue"),
 									},
 								},
@@ -171,10 +100,52 @@ func schema_pkg_apis_secret_v0alpha1_SecureValuesSpec(ref common.ReferenceCallba
 						},
 					},
 				},
-				Required: []string{"title", "description", "values"},
 			},
 		},
 		Dependencies: []string{
-			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue"},
+			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_secret_v0alpha1_SecureValueSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"title": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Visible title for this secret",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"value": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The raw value is only valid for write.  Read/List will always be empty Writing with an empty value will always fail",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apis": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The APIs that are allowed to decrypt this secret",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"title", "apis"},
+			},
+		},
 	}
 }

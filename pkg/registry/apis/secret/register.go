@@ -45,8 +45,8 @@ func (b *SecretAPIBuilder) GetGroupVersion() schema.GroupVersion {
 
 func addKnownTypes(scheme *runtime.Scheme, gv schema.GroupVersion) {
 	scheme.AddKnownTypes(gv,
-		&secret.SecureValues{},
-		&secret.SecureValuesList{},
+		&secret.SecureValue{},
+		&secret.SecureValueList{},
 	)
 }
 
