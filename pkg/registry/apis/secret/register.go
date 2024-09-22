@@ -81,10 +81,14 @@ func (b *SecretAPIBuilder) GetAPIGroupInfo(
 ) (*genericapiserver.APIGroupInfo, error) {
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(secret.GROUP, scheme, metav1.ParameterCodec, codecs)
 
-	featureStore := NewFeaturesStorage()
+	ss := &secretStorage{
+		store:          b.store,
+		resource:       secret.SecureValuesResourceInfo,
+		tableConverter: secret.SecureValuesResourceInfo.TableConverter(),
+	}
 
 	storage := map[string]rest.Storage{}
-	storage[featureStore.resource.StoragePath()] = featureStore
+	storage[ss.resource.StoragePath()] = ss
 
 	apiGroupInfo.VersionedResourcesStorageMap[secret.VERSION] = storage
 	return &apiGroupInfo, nil

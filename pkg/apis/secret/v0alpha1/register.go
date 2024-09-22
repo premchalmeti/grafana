@@ -15,7 +15,7 @@ const (
 )
 
 var SecureValuesResourceInfo = utils.NewResourceInfo(GROUP, VERSION,
-	"securevalue", "securevalues", "SecureValue",
+	"securevalues", "securevalue", "SecureValue",
 	func() runtime.Object { return &SecureValue{} },
 	func() runtime.Object { return &SecureValueList{} },
 	utils.TableColumns{

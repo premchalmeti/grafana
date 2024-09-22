@@ -2,13 +2,20 @@ package secret
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
+	"text/template"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/grafana/authlib/claims"
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
 	secret "github.com/grafana/grafana/pkg/apis/secret/v0alpha1"
 	"github.com/grafana/grafana/pkg/infra/db"
+	"github.com/grafana/grafana/pkg/setting"
+	"github.com/grafana/grafana/pkg/storage/unified/sql/sqltemplate"
+	"github.com/grafana/grafana/pkg/util"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -28,21 +35,44 @@ type SecureValueStore interface {
 	History(ctx context.Context, ns string, name string, continueToken string) (*secret.SecureValueActivity, error)
 }
 
-func ProvideSecureValueStore(db db.DB, keeper SecretKeeper) (SecureValueStore, error) {
-	// TODO... read config and actually use key
+func ProvideSecureValueStore(db db.DB, keeper SecretKeeper, cfg *setting.Cfg) (SecureValueStore, error) {
+	// Run SQL migrations
+	err := MigrateSecretStore(context.Background(), db.GetEngine(), cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	// One version of DB?
 	return &secureStore{
-		keeper: keeper,
-		db:     db,
+		keeper:  keeper,
+		db:      db,
+		dialect: sqltemplate.DialectForDriver(string(db.GetDBType())),
 	}, nil
 }
 
 var (
 	_ SecureValueStore = (*secureStore)(nil)
+
+	//go:embed *.sql
+	sqlTemplatesFS embed.FS
+
+	sqlTemplates = template.Must(template.New("sql").ParseFS(sqlTemplatesFS, `*.sql`))
+
+	// The SQL Commands
+	sqlSecureValueInsert = mustTemplate("secure_value_insert.sql")
 )
 
+func mustTemplate(filename string) *template.Template {
+	if t := sqlTemplates.Lookup(filename); t != nil {
+		return t
+	}
+	panic(fmt.Sprintf("template file not found: %s", filename))
+}
+
 type secureStore struct {
-	keeper SecretKeeper
-	db     db.DB
+	keeper  SecretKeeper
+	db      db.DB
+	dialect sqltemplate.Dialect
 }
 
 type secretValueRow struct {
@@ -109,9 +139,78 @@ func (v *secretValueRow) toK8s() (*secret.SecureValue, error) {
 	return val, nil
 }
 
+type createSecureValue struct {
+	sqltemplate.SQLTemplate
+	Row *secretValueRow
+}
+
+func (r createSecureValue) Validate() error {
+	return nil // TODO
+}
+
 // Create implements SecureValueStore.
-func (*secureStore) Create(ctx context.Context, s *secret.SecureValue) (*secret.SecureValue, error) {
-	panic("unimplemented")
+func (s *secureStore) Create(ctx context.Context, v *secret.SecureValue) (*secret.SecureValue, error) {
+	authInfo, ok := claims.From(ctx)
+	if !ok {
+		return nil, fmt.Errorf("missing auth info in context")
+	}
+
+	now := time.Now().UnixMilli()
+	row := &secretValueRow{
+		UID:       uuid.NewString(),
+		Namespace: v.Namespace,
+		Name:      v.Name,
+		Title:     v.Spec.Title,
+		Salt:      util.GenerateShortUID(), // not exposed in the UI
+		Value:     v.Spec.Value,
+		Created:   now,
+		Updated:   now,
+		CreatedBy: authInfo.GetUID(),
+		UpdatedBy: authInfo.GetUID(),
+	}
+	if row.Name == "" {
+		row.Name = util.GenerateShortUID()
+	}
+	if len(v.Labels) > 0 {
+		v, err := json.Marshal(v.Labels)
+		if err != nil {
+			return nil, err
+		}
+		row.Labels = string(v)
+	}
+	if len(v.Spec.APIs) > 0 {
+		v, err := json.Marshal(v.Spec.APIs)
+		if err != nil {
+			return nil, err
+		}
+		row.APIs = string(v)
+	}
+	if len(v.Annotations) > 0 {
+		v, err := json.Marshal(v.Annotations)
+		if err != nil {
+			return nil, err
+		}
+		row.Annotations = string(v)
+	}
+
+	// insert
+	req := &createSecureValue{
+		SQLTemplate: sqltemplate.New(s.dialect),
+		Row:         row,
+	}
+	q, err := sqltemplate.Execute(sqlSecureValueInsert, req)
+	if err != nil {
+		return nil, fmt.Errorf("insert template %q: %w", q, err)
+	}
+
+	fmt.Printf("CREATE: %s\n", q)
+
+	_, err = s.db.GetSqlxSession().Exec(ctx, q, req.GetArgs()...)
+	if err != nil {
+		return nil, err
+	}
+
+	return row.toK8s()
 }
 
 // Get implements SecureValueStore.
@@ -135,7 +234,9 @@ func (s *secureStore) Delete(ctx context.Context, ns string, name string) (*secr
 
 // List implements SecureValueStore.
 func (s *secureStore) List(ctx context.Context, ns string, options *internalversion.ListOptions) (*secret.SecureValueList, error) {
-	panic("unimplemented")
+	return &secret.SecureValueList{
+		Items: []secret.SecureValue{},
+	}, nil // nothing
 }
 
 // Decrypt implements SecureValueStore.

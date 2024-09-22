@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/grafana/authlib/claims"
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
 	secret "github.com/grafana/grafana/pkg/apis/secret/v0alpha1"
 	secretstore "github.com/grafana/grafana/pkg/storage/secret"
@@ -29,7 +28,6 @@ var (
 type secretStorage struct {
 	store          secretstore.SecureValueStore
 	resource       utils.ResourceInfo
-	namespacer     claims.NamespaceFormatter
 	tableConverter rest.TableConvertor
 }
 
