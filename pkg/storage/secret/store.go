@@ -8,7 +8,7 @@ import (
 
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
 	secret "github.com/grafana/grafana/pkg/apis/secret/v0alpha1"
-	"github.com/grafana/grafana/pkg/storage/unified/sql/db"
+	"github.com/grafana/grafana/pkg/infra/db"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -18,7 +18,7 @@ type SecureValueStore interface {
 	Create(ctx context.Context, s *secret.SecureValue) (*secret.SecureValue, error)
 	Read(ctx context.Context, ns string, name string) (*secret.SecureValue, error)
 	Update(ctx context.Context, s *secret.SecureValue) (*secret.SecureValue, error)
-	Delete(ctx context.Context, ns string, name string) (*secret.SecureValue, error)
+	Delete(ctx context.Context, ns string, name string) (*secret.SecureValue, bool, error)
 	List(ctx context.Context, ns string, options *internalversion.ListOptions) (*secret.SecureValueList, error)
 
 	// Decrypt a single value -- the identity is in context
@@ -129,7 +129,7 @@ func (*secureStore) Update(ctx context.Context, s *secret.SecureValue) (*secret.
 }
 
 // Delete implements SecureValueStore.
-func (s *secureStore) Delete(ctx context.Context, ns string, name string) (*secret.SecureValue, error) {
+func (s *secureStore) Delete(ctx context.Context, ns string, name string) (*secret.SecureValue, bool, error) {
 	panic("unimplemented")
 }
 

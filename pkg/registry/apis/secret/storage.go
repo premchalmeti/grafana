@@ -7,6 +7,7 @@ import (
 	"github.com/grafana/authlib/claims"
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
 	secret "github.com/grafana/grafana/pkg/apis/secret/v0alpha1"
+	secretstore "github.com/grafana/grafana/pkg/storage/secret"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -26,6 +27,7 @@ var (
 )
 
 type secretStorage struct {
+	store          secretstore.SecureValueStore
 	resource       utils.ResourceInfo
 	namespacer     claims.NamespaceFormatter
 	tableConverter rest.TableConvertor
@@ -54,14 +56,13 @@ func (s *secretStorage) ConvertToTable(ctx context.Context, object runtime.Objec
 }
 
 func (s *secretStorage) List(ctx context.Context, options *internalversion.ListOptions) (runtime.Object, error) {
-	list := &secret.SecureValueList{}
-	return list, nil
+	ns := request.NamespaceValue(ctx)
+	return s.store.List(ctx, ns, options)
 }
 
 func (s *secretStorage) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
 	ns := request.NamespaceValue(ctx)
-	fmt.Printf("GET: %s/%s\n", ns, name)
-	return nil, fmt.Errorf("TODO...")
+	return s.store.Read(ctx, ns, name)
 }
 
 func (s *secretStorage) Create(ctx context.Context,
@@ -69,9 +70,11 @@ func (s *secretStorage) Create(ctx context.Context,
 	createValidation rest.ValidateObjectFunc,
 	options *metav1.CreateOptions,
 ) (runtime.Object, error) {
-	ns := request.NamespaceValue(ctx)
-	fmt.Printf("CREATE: %s/%+v\n", ns, obj)
-	return nil, fmt.Errorf("TODO Create...")
+	sv, ok := obj.(*secret.SecureValue)
+	if !ok {
+		return nil, fmt.Errorf("expected SecureValue for create")
+	}
+	return s.store.Create(ctx, sv)
 }
 
 func (s *secretStorage) Update(ctx context.Context,
@@ -93,25 +96,18 @@ func (s *secretStorage) Update(ctx context.Context,
 		return old, created, err
 	}
 
-	p, ok := obj.(*secret.SecureValue)
+	sv, ok := obj.(*secret.SecureValue)
 	if !ok {
 		return nil, created, fmt.Errorf("expected playlist after update")
 	}
-
-	fmt.Printf("UPDATED: %+v\n", p)
-
-	r, err := s.Get(ctx, name, nil)
-	return r, created, err
+	sv, err = s.store.Update(ctx, sv)
+	return sv, created, err
 }
 
 // GracefulDeleter
 func (s *secretStorage) Delete(ctx context.Context, name string, deleteValidation rest.ValidateObjectFunc, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
-	v, err := s.Get(ctx, name, &metav1.GetOptions{})
-	if err != nil {
-		return v, false, err // includes the not-found error
-	}
-	fmt.Printf("UPDATED: %+v\n", v)
-	return nil, true, fmt.Errorf("TODO")
+	ns := request.NamespaceValue(ctx)
+	return s.store.Delete(ctx, ns, name)
 }
 
 // CollectionDeleter

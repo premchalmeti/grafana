@@ -14,9 +14,11 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue":     schema_pkg_apis_secret_v0alpha1_SecureValue(ref),
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueList": schema_pkg_apis_secret_v0alpha1_SecureValueList(ref),
-		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueSpec": schema_pkg_apis_secret_v0alpha1_SecureValueSpec(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValue":             schema_pkg_apis_secret_v0alpha1_SecureValue(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueActivity":     schema_pkg_apis_secret_v0alpha1_SecureValueActivity(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueActivityList": schema_pkg_apis_secret_v0alpha1_SecureValueActivityList(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueList":         schema_pkg_apis_secret_v0alpha1_SecureValueList(ref),
+		"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueSpec":         schema_pkg_apis_secret_v0alpha1_SecureValueSpec(ref),
 	}
 }
 
@@ -57,6 +59,95 @@ func schema_pkg_apis_secret_v0alpha1_SecureValue(ref common.ReferenceCallback) c
 		},
 		Dependencies: []string{
 			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueSpec", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_secret_v0alpha1_SecureValueActivity(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"timestamp": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.Timestamp"),
+						},
+					},
+					"action": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"identity": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CREATE, UPDATE, DELETE, etc",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"details": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"timestamp", "action", "identity"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Timestamp"},
+	}
+}
+
+func schema_pkg_apis_secret_v0alpha1_SecureValueActivityList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueActivity"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/grafana/grafana/pkg/apis/secret/v0alpha1.SecureValueActivity", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
 	}
 }
 

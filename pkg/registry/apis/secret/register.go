@@ -5,6 +5,7 @@ import (
 	grafanarest "github.com/grafana/grafana/pkg/apiserver/rest"
 	"github.com/grafana/grafana/pkg/services/apiserver/builder"
 	"github.com/grafana/grafana/pkg/services/featuremgmt"
+	secretstore "github.com/grafana/grafana/pkg/storage/secret"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -20,21 +21,22 @@ var _ builder.APIGroupBuilder = (*SecretAPIBuilder)(nil)
 
 // This is used just so wire has something unique to return
 type SecretAPIBuilder struct {
-	// TODO...
+	store secretstore.SecureValueStore
 }
 
-func NewSecretAPIBuilder() *SecretAPIBuilder {
-	return &SecretAPIBuilder{}
+func NewSecretAPIBuilder(store secretstore.SecureValueStore) *SecretAPIBuilder {
+	return &SecretAPIBuilder{store}
 }
 
 func RegisterAPIService(features featuremgmt.FeatureToggles,
 	apiregistration builder.APIRegistrar,
+	store secretstore.SecureValueStore,
 ) *SecretAPIBuilder {
 	if !features.IsEnabledGlobally(featuremgmt.FlagGrafanaAPIServerWithExperimentalAPIs) {
 		return nil // skip registration unless opting into experimental apis
 	}
 
-	builder := NewSecretAPIBuilder()
+	builder := NewSecretAPIBuilder(store)
 	apiregistration.RegisterAPI(builder)
 	return builder
 }
@@ -47,6 +49,7 @@ func addKnownTypes(scheme *runtime.Scheme, gv schema.GroupVersion) {
 	scheme.AddKnownTypes(gv,
 		&secret.SecureValue{},
 		&secret.SecureValueList{},
+		&secret.SecureValueActivityList{},
 	)
 }
 
