@@ -1,5 +1,4 @@
-INSERT INTO `secure_value`
-  (
+INSERT INTO `secure_value` (
     "uid", 
     "namespace", "name", "title",
     "salt", "value",
@@ -17,6 +16,6 @@ INSERT INTO `secure_value`
     1234, 'user:ryan',
     5678, 'user:cameron',
     '{"x":"XXXX"}', '{"a":"AAA", "b", "BBBB"}',
-    '["aaa", "bbb", "ccc"]',
+    '["aaa", "bbb", "ccc"]'
   )
 ;
