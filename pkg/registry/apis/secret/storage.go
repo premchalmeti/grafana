@@ -89,6 +89,7 @@ func (s *secretStorage) Update(ctx context.Context,
 		return old, created, err
 	}
 
+	// makes sure the UID and RV are OK
 	obj, err := objInfo.UpdatedObject(ctx, old)
 	if err != nil {
 		return old, created, err
@@ -96,8 +97,15 @@ func (s *secretStorage) Update(ctx context.Context,
 
 	sv, ok := obj.(*secret.SecureValue)
 	if !ok {
-		return nil, created, fmt.Errorf("expected playlist after update")
+		return nil, created, fmt.Errorf("expected SecureValue for update")
 	}
+
+	// Is this really a create request
+	if sv.UID == "" {
+		n, err := s.Create(ctx, sv, nil, &metav1.CreateOptions{})
+		return n, true, err
+	}
+
 	sv, err = s.store.Update(ctx, sv)
 	return sv, created, err
 }

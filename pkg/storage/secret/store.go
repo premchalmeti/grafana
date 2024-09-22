@@ -60,6 +60,7 @@ var (
 
 	// The SQL Commands
 	sqlSecureValueInsert = mustTemplate("secure_value_insert.sql")
+	sqlSecureValueUpdate = mustTemplate("secure_value_update.sql")
 )
 
 func mustTemplate(filename string) *template.Template {
@@ -145,6 +146,15 @@ type createSecureValue struct {
 }
 
 func (r createSecureValue) Validate() error {
+	return nil // TODO
+}
+
+type updateSecureValue struct {
+	sqltemplate.SQLTemplate
+	Row *secretValueRow
+}
+
+func (r updateSecureValue) Validate() error {
 	return nil // TODO
 }
 
