@@ -1,7 +1,9 @@
 package secret
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
@@ -61,7 +63,11 @@ func (s *secretStorage) List(ctx context.Context, options *internalversion.ListO
 
 func (s *secretStorage) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
 	ns := request.NamespaceValue(ctx)
-	return s.store.Read(ctx, ns, name)
+	v, err := s.store.Read(ctx, ns, name)
+	if v == nil {
+		return nil, s.resource.NewNotFound(name)
+	}
+	return v, err
 }
 
 func (s *secretStorage) Create(ctx context.Context,
@@ -100,21 +106,20 @@ func (s *secretStorage) Update(ctx context.Context,
 	forceAllowCreate bool,
 	options *metav1.UpdateOptions,
 ) (runtime.Object, bool, error) {
-	created := false
-	old, err := s.Get(ctx, name, nil)
-	if err != nil {
-		return old, created, err
+	old, _ := s.Get(ctx, name, nil)
+	if old == nil {
+		old = &secret.SecureValue{}
 	}
 
 	// makes sure the UID and RV are OK
 	obj, err := objInfo.UpdatedObject(ctx, old)
 	if err != nil {
-		return old, created, err
+		return old, false, err
 	}
 
 	sv, ok := obj.(*secret.SecureValue)
 	if !ok {
-		return nil, created, fmt.Errorf("expected SecureValue for update")
+		return nil, false, fmt.Errorf("expected SecureValue for update")
 	}
 
 	// Is this really a create request
@@ -123,8 +128,17 @@ func (s *secretStorage) Update(ctx context.Context,
 		return n, true, err
 	}
 
+	// short circuit when no changes to JSON
+	if sv.Spec.Value == "" {
+		oldjson, _ := json.Marshal(old)
+		newjson, _ := json.Marshal(obj)
+		if bytes.Equal(oldjson, newjson) && len(newjson) > 0 {
+			return old, false, nil
+		}
+	}
+
 	sv, err = s.store.Update(ctx, sv)
-	return sv, created, err
+	return sv, false, err
 }
 
 // GracefulDeleter

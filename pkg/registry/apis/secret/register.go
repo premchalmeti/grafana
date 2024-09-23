@@ -93,7 +93,8 @@ func (b *SecretAPIBuilder) GetOpenAPIDefinitions() common.GetOpenAPIDefinitions 
 }
 
 func (b *SecretAPIBuilder) GetAuthorizer() authorizer.Authorizer {
-	return nil // default authorizer is fine
+	// TODO... who can create secrets? must be multi-tenant first
+	return nil // start with the default authorizer
 }
 
 // Register additional routes with the server

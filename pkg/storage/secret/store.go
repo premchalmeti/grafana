@@ -9,6 +9,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/grafana/authlib/claims"
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
@@ -99,17 +100,25 @@ type secureValueRow struct {
 	APIs        string // []string
 }
 
-func toSecureValueRow(v *secret.SecureValue) (*secureValueRow, error) {
-	meta, err := utils.MetaAccessor(v)
+var skipAnnotations = map[string]bool{
+	"kubectl.kubernetes.io/last-applied-configuration": true, // force server side apply
+	utils.AnnoKeyCreatedBy:                             true,
+	utils.AnnoKeyUpdatedBy:                             true,
+	utils.AnnoKeyUpdatedTimestamp:                      true,
+}
+
+// Convert everything (except the value!) to a flat row structure
+func toSecureValueRow(sv *secret.SecureValue) (*secureValueRow, error) {
+	meta, err := utils.MetaAccessor(sv)
 	if err != nil {
 		return nil, err
 	}
 	row := &secureValueRow{
 		UID:       uuid.NewString(),
-		Namespace: v.Namespace,
-		Name:      v.Name,
-		Title:     v.Spec.Title,
-		Value:     v.Spec.Value,
+		Namespace: sv.Namespace,
+		Name:      sv.Name,
+		Title:     sv.Spec.Title,
+		Value:     sv.Spec.Value,
 		Created:   meta.GetCreationTimestamp().UnixMilli(),
 		CreatedBy: meta.GetCreatedBy(),
 		UpdatedBy: meta.GetUpdatedBy(),
@@ -121,32 +130,46 @@ func toSecureValueRow(v *secret.SecureValue) (*secureValueRow, error) {
 		row.Updated = row.Created
 	}
 
-	if len(v.Labels) > 0 {
-		v, err := json.Marshal(v.Labels)
+	if len(sv.Labels) > 0 {
+		v, err := json.Marshal(sv.Labels)
 		if err != nil {
 			return row, err
 		}
 		row.Labels = string(v)
 	}
-	if len(v.Spec.APIs) > 0 {
-		v, err := json.Marshal(v.Spec.APIs)
+	if len(sv.Spec.APIs) > 0 {
+		v, err := json.Marshal(sv.Spec.APIs)
 		if err != nil {
 			return row, err
 		}
 		row.APIs = string(v)
 	}
-	if len(v.Annotations) > 0 {
+	if len(sv.Annotations) > 0 {
 		anno := make(map[string]string)
-		for k, v := range v.Annotations {
-			if !strings.HasPrefix("grafana.app/", k) {
-				anno[k] = v
+		for k, v := range sv.Annotations {
+			if skipAnnotations[k] {
+				continue
 			}
+			anno[k] = v
 		}
 		v, err := json.Marshal(anno)
 		if err != nil {
 			return row, err
 		}
 		row.Annotations = string(v)
+	}
+
+	// Make sure the raw secret is not in the row (yet)
+	if sv.Spec.Value != "" {
+		if strings.Contains(row.Annotations, sv.Spec.Value) {
+			return nil, fmt.Errorf("raw secret found in annotations")
+		}
+		if strings.Contains(row.Labels, sv.Spec.Value) {
+			return nil, fmt.Errorf("raw secret found in labels")
+		}
+		if strings.Contains(row.APIs, sv.Spec.Value) {
+			return nil, fmt.Errorf("raw secret found in apis")
+		}
 	}
 	return row, nil
 }
@@ -158,7 +181,7 @@ func (v *secureValueRow) toK8s() (*secret.SecureValue, error) {
 			Name:              v.Name,
 			Namespace:         v.Namespace,
 			UID:               types.UID(v.UID),
-			CreationTimestamp: metav1.NewTime(time.UnixMilli(v.Created)),
+			CreationTimestamp: metav1.NewTime(time.UnixMilli(v.Created).UTC()),
 			Labels:            make(map[string]string),
 		},
 		Spec: secret.SecureValueSpec{
@@ -190,10 +213,8 @@ func (v *secureValueRow) toK8s() (*secret.SecureValue, error) {
 		return nil, err
 	}
 	meta.SetCreatedBy(v.CreatedBy)
-	if v.Updated != v.Created {
-		meta.SetUpdatedBy(v.UpdatedBy)
-		meta.SetUpdatedTimestampMillis(v.Updated)
-	}
+	meta.SetUpdatedBy(v.UpdatedBy)
+	meta.SetUpdatedTimestampMillis(v.Updated)
 	meta.SetResourceVersionInt64(v.Updated) // yes millis RV
 	return val, nil
 }
@@ -241,8 +262,10 @@ func (s *secureStore) Create(ctx context.Context, v *secret.SecureValue) (*secre
 		return nil, err
 	}
 	row.Value, err = s.keeper.Encode(ctx, SaltyValue{
-		Value: v.Spec.Value,
-		Salt:  row.Salt,
+		Value:  v.Spec.Value,
+		Salt:   row.Salt,
+		Keeper: row.Keeper,
+		Addr:   row.Addr,
 	})
 	if err != nil {
 		return nil, err
@@ -278,8 +301,84 @@ func (s *secureStore) Read(ctx context.Context, ns string, name string) (*secret
 }
 
 // Update implements SecureValueStore.
-func (*secureStore) Update(ctx context.Context, s *secret.SecureValue) (*secret.SecureValue, error) {
-	panic("unimplemented")
+func (s *secureStore) Update(ctx context.Context, obj *secret.SecureValue) (*secret.SecureValue, error) {
+	authInfo, ok := claims.From(ctx)
+	if !ok {
+		return nil, fmt.Errorf("missing auth info in context")
+	}
+	existing, err := s.get(ctx, obj.Namespace, obj.Name)
+	if err != nil {
+		return nil, err
+	}
+	if existing == nil {
+		return nil, fmt.Errorf("not found")
+	}
+
+	value := obj.Spec.Value
+	if value != "" {
+		oldvalue, err := s.keeper.Decode(ctx, SaltyValue{
+			Value:  existing.Value,
+			Salt:   existing.Salt,
+			Keeper: existing.Keeper,
+			Addr:   existing.Addr,
+		})
+		if oldvalue == value && err == nil {
+			obj.Spec.Value = "" // no not return it
+			value = ""
+		}
+	}
+
+	row, err := toSecureValueRow(obj)
+	if err != nil {
+		return nil, err
+	}
+	row.Salt = existing.Salt
+	row.Value = existing.Value
+	row.Keeper = existing.Keeper
+	row.Addr = existing.Addr
+
+	if value == "" && cmp.Equal(row, existing) {
+		return row.toK8s() // The unchanged value
+	}
+
+	jA, _ := json.MarshalIndent(existing, "", "  ")
+	jB, _ := json.MarshalIndent(row, "", "  ")
+	fmt.Printf("EXISTING: %s\n", jA)
+	fmt.Printf("  UPDATE: %s\n", jB)
+
+	if value != "" {
+		row.Salt, err = util.GetRandomString(10)
+		if err != nil {
+			return nil, err
+		}
+		row.Value, err = s.keeper.Encode(ctx, SaltyValue{
+			Value:  value,
+			Salt:   row.Salt,
+			Keeper: row.Keeper,
+			Addr:   row.Addr,
+		})
+	}
+	row.Updated = time.Now().UnixMilli()
+	row.UpdatedBy = authInfo.GetUID()
+
+	// update
+	req := &updateSecureValue{
+		SQLTemplate: sqltemplate.New(s.dialect),
+		Row:         row,
+	}
+	q, err := sqltemplate.Execute(sqlSecureValueUpdate, req)
+	if err != nil {
+		return nil, fmt.Errorf("insert template %q: %w", q, err)
+	}
+
+	fmt.Printf("UPDATE: %s\n", q)
+
+	_, err = s.db.GetSqlxSession().Exec(ctx, q, req.GetArgs()...)
+	if err != nil {
+		return nil, err
+	}
+
+	return row.toK8s()
 }
 
 // Delete implements SecureValueStore.
