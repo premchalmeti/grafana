@@ -7,6 +7,7 @@ import (
 	"github.com/grafana/grafana/pkg/apimachinery/utils"
 	secret "github.com/grafana/grafana/pkg/apis/secret/v0alpha1"
 	secretstore "github.com/grafana/grafana/pkg/storage/secret"
+	"github.com/grafana/grafana/pkg/util"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -72,6 +73,22 @@ func (s *secretStorage) Create(ctx context.Context,
 	if !ok {
 		return nil, fmt.Errorf("expected SecureValue for create")
 	}
+
+	if sv.Spec.Value == "" {
+		return nil, fmt.Errorf("expecting value")
+	}
+
+	if sv.Name == "" {
+		r, err := util.GetRandomString(8)
+		if err != nil {
+			return nil, err
+		}
+		if sv.GenerateName == "" {
+			sv.GenerateName = "s"
+		}
+		sv.Name = sv.GenerateName + r
+	}
+
 	return s.store.Create(ctx, sv)
 }
 

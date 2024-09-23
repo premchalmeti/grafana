@@ -5,6 +5,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/template"
 	"time"
 
@@ -17,19 +18,22 @@ import (
 	"github.com/grafana/grafana/pkg/storage/unified/sql/sqltemplate"
 	"github.com/grafana/grafana/pkg/util"
 	"k8s.io/apimachinery/pkg/apis/meta/internalversion"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 )
 
 type SecureValueStore interface {
 	Create(ctx context.Context, s *secret.SecureValue) (*secret.SecureValue, error)
-	Read(ctx context.Context, ns string, name string) (*secret.SecureValue, error)
 	Update(ctx context.Context, s *secret.SecureValue) (*secret.SecureValue, error)
 	Delete(ctx context.Context, ns string, name string) (*secret.SecureValue, bool, error)
 	List(ctx context.Context, ns string, options *internalversion.ListOptions) (*secret.SecureValueList, error)
 
-	// Decrypt a single value -- the identity is in context
-	Decrypt(ctx context.Context, ns string, name string) (string, error)
+	// The value will not be included
+	Read(ctx context.Context, ns string, name string) (*secret.SecureValue, error)
+
+	// Return a version that has the secure value visible
+	Decrypt(ctx context.Context, ns string, name string) (*secret.SecureValue, error)
 
 	// Show the history for a single value
 	History(ctx context.Context, ns string, name string, continueToken string) (*secret.SecureValueActivity, error)
@@ -61,6 +65,7 @@ var (
 	// The SQL Commands
 	sqlSecureValueInsert = mustTemplate("secure_value_insert.sql")
 	sqlSecureValueUpdate = mustTemplate("secure_value_update.sql")
+	sqlSecureValueList   = mustTemplate("secure_value_list.sql")
 )
 
 func mustTemplate(filename string) *template.Template {
@@ -76,7 +81,7 @@ type secureStore struct {
 	dialect sqltemplate.Dialect
 }
 
-type secretValueRow struct {
+type secureValueRow struct {
 	UID         string
 	Namespace   string
 	Name        string
@@ -94,14 +99,67 @@ type secretValueRow struct {
 	APIs        string // []string
 }
 
+func toSecureValueRow(v *secret.SecureValue) (*secureValueRow, error) {
+	meta, err := utils.MetaAccessor(v)
+	if err != nil {
+		return nil, err
+	}
+	row := &secureValueRow{
+		UID:       uuid.NewString(),
+		Namespace: v.Namespace,
+		Name:      v.Name,
+		Title:     v.Spec.Title,
+		Value:     v.Spec.Value,
+		Created:   meta.GetCreationTimestamp().UnixMilli(),
+		CreatedBy: meta.GetCreatedBy(),
+		UpdatedBy: meta.GetUpdatedBy(),
+	}
+	t, _ := meta.GetUpdatedTimestamp()
+	if t != nil {
+		row.Updated = t.UnixMilli()
+	} else {
+		row.Updated = row.Created
+	}
+
+	if len(v.Labels) > 0 {
+		v, err := json.Marshal(v.Labels)
+		if err != nil {
+			return row, err
+		}
+		row.Labels = string(v)
+	}
+	if len(v.Spec.APIs) > 0 {
+		v, err := json.Marshal(v.Spec.APIs)
+		if err != nil {
+			return row, err
+		}
+		row.APIs = string(v)
+	}
+	if len(v.Annotations) > 0 {
+		anno := make(map[string]string)
+		for k, v := range v.Annotations {
+			if !strings.HasPrefix("grafana.app/", k) {
+				anno[k] = v
+			}
+		}
+		v, err := json.Marshal(anno)
+		if err != nil {
+			return row, err
+		}
+		row.Annotations = string(v)
+	}
+	return row, nil
+}
+
 // Create implements SecureValueStore.
-func (v *secretValueRow) toK8s() (*secret.SecureValue, error) {
+func (v *secureValueRow) toK8s() (*secret.SecureValue, error) {
 	val := &secret.SecureValue{
-		ObjectMeta: v1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:              v.Name,
 			Namespace:         v.Namespace,
 			UID:               types.UID(v.UID),
-			CreationTimestamp: v1.NewTime(time.UnixMilli(v.Created)),
+			CreationTimestamp: metav1.NewTime(time.UnixMilli(v.Created)),
+			Labels:            make(map[string]string),
 		},
 		Spec: secret.SecureValueSpec{
 			Title: v.Title,
@@ -142,7 +200,7 @@ func (v *secretValueRow) toK8s() (*secret.SecureValue, error) {
 
 type createSecureValue struct {
 	sqltemplate.SQLTemplate
-	Row *secretValueRow
+	Row *secureValueRow
 }
 
 func (r createSecureValue) Validate() error {
@@ -151,7 +209,7 @@ func (r createSecureValue) Validate() error {
 
 type updateSecureValue struct {
 	sqltemplate.SQLTemplate
-	Row *secretValueRow
+	Row *secureValueRow
 }
 
 func (r updateSecureValue) Validate() error {
@@ -164,43 +222,30 @@ func (s *secureStore) Create(ctx context.Context, v *secret.SecureValue) (*secre
 	if !ok {
 		return nil, fmt.Errorf("missing auth info in context")
 	}
+	if v.Name == "" {
+		return nil, fmt.Errorf("missing name")
+	}
+	if v.Spec.Value == "" {
+		return nil, fmt.Errorf("missing value")
+	}
 
-	now := time.Now().UnixMilli()
-	row := &secretValueRow{
-		UID:       uuid.NewString(),
-		Namespace: v.Namespace,
-		Name:      v.Name,
-		Title:     v.Spec.Title,
-		Salt:      util.GenerateShortUID(), // not exposed in the UI
-		Value:     v.Spec.Value,
-		Created:   now,
-		Updated:   now,
-		CreatedBy: authInfo.GetUID(),
-		UpdatedBy: authInfo.GetUID(),
+	v.CreationTimestamp = metav1.NewTime(time.Now())
+	row, err := toSecureValueRow(v)
+	if err != nil {
+		return nil, err
 	}
-	if row.Name == "" {
-		row.Name = util.GenerateShortUID()
+	row.CreatedBy = authInfo.GetUID()
+	row.UpdatedBy = authInfo.GetUID()
+	row.Salt, err = util.GetRandomString(10)
+	if err != nil {
+		return nil, err
 	}
-	if len(v.Labels) > 0 {
-		v, err := json.Marshal(v.Labels)
-		if err != nil {
-			return nil, err
-		}
-		row.Labels = string(v)
-	}
-	if len(v.Spec.APIs) > 0 {
-		v, err := json.Marshal(v.Spec.APIs)
-		if err != nil {
-			return nil, err
-		}
-		row.APIs = string(v)
-	}
-	if len(v.Annotations) > 0 {
-		v, err := json.Marshal(v.Annotations)
-		if err != nil {
-			return nil, err
-		}
-		row.Annotations = string(v)
+	row.Value, err = s.keeper.Encode(ctx, SaltyValue{
+		Value: v.Spec.Value,
+		Salt:  row.Salt,
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	// insert
@@ -242,31 +287,89 @@ func (s *secureStore) Delete(ctx context.Context, ns string, name string) (*secr
 	panic("unimplemented")
 }
 
+type listSecureValues struct {
+	sqltemplate.SQLTemplate
+	Request secureValueRow
+}
+
+func (r listSecureValues) Validate() error {
+	return nil // TODO
+}
+
 // List implements SecureValueStore.
 func (s *secureStore) List(ctx context.Context, ns string, options *internalversion.ListOptions) (*secret.SecureValueList, error) {
-	return &secret.SecureValueList{
-		Items: []secret.SecureValue{},
-	}, nil // nothing
+	req := &listSecureValues{
+		SQLTemplate: sqltemplate.New(s.dialect),
+		Request: secureValueRow{
+			Namespace: ns,
+		},
+	}
+	q, err := sqltemplate.Execute(sqlSecureValueList, req)
+	if err != nil {
+		return nil, fmt.Errorf("list template %q: %w", q, err)
+	}
+
+	selector := options.LabelSelector
+	if selector == nil {
+		selector = labels.Everything()
+	}
+
+	row := &secureValueRow{}
+	list := &secret.SecureValueList{}
+	rows, err := s.db.GetSqlxSession().Query(ctx, q, req.GetArgs()...)
+	if err != nil {
+		return nil, fmt.Errorf("list template %q: %w", q, err)
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+	for rows.Next() {
+		err = rows.Scan(&row.UID,
+			&row.Namespace, &row.Name, &row.Title,
+			&row.Salt, &row.Value,
+			&row.Keeper, &row.Addr,
+			&row.Created, &row.CreatedBy,
+			&row.Updated, &row.UpdatedBy,
+			&row.Annotations, &row.Labels,
+			&row.APIs,
+		)
+		if err != nil {
+			return nil, err
+		}
+		obj, err := row.toK8s()
+		if err != nil {
+			return nil, err
+		}
+		if selector.Matches(labels.Set(obj.Labels)) {
+			list.Items = append(list.Items, *obj)
+		}
+	}
+	return list, nil // nothing
 }
 
 // Decrypt implements SecureValueStore.
-func (s *secureStore) Decrypt(ctx context.Context, ns string, name string) (string, error) {
-	v, err := s.get(ctx, ns, name)
+func (s *secureStore) Decrypt(ctx context.Context, ns string, name string) (*secret.SecureValue, error) {
+	row, err := s.get(ctx, ns, name)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// TODO!!!
-	if v.APIs != "" {
-		fmt.Printf("MAKE SURE ctx is an app that can read: %s\n", v.APIs)
+	if row.APIs != "" {
+		fmt.Printf("MAKE SURE ctx is an app that can read: %s\n", row.APIs)
 	}
 
-	return s.keeper.Decode(ctx, SaltyValue{
-		Value:  v.Value,
-		Salt:   v.Salt,
-		Keeper: v.Keeper,
-		Addr:   v.Addr,
+	v, err := row.toK8s()
+	if err != nil {
+		return nil, err
+	}
+	v.Spec.Value, err = s.keeper.Decode(ctx, SaltyValue{
+		Value:  row.Value,
+		Salt:   row.Salt,
+		Keeper: row.Keeper,
+		Addr:   row.Addr,
 	})
+	return v, err
 }
 
 // History implements SecureValueStore.
@@ -274,6 +377,38 @@ func (s *secureStore) History(ctx context.Context, ns string, name string, conti
 	panic("unimplemented")
 }
 
-func (s *secureStore) get(ctx context.Context, ns string, name string) (*secretValueRow, error) {
-	return nil, fmt.Errorf("TODO")
+func (s *secureStore) get(ctx context.Context, ns string, name string) (*secureValueRow, error) {
+	req := &listSecureValues{
+		SQLTemplate: sqltemplate.New(s.dialect),
+		Request: secureValueRow{
+			Namespace: ns,
+			Name:      name,
+		},
+	}
+	q, err := sqltemplate.Execute(sqlSecureValueList, req)
+	if err != nil {
+		return nil, fmt.Errorf("list template %q: %w", q, err)
+	}
+
+	rows, err := s.db.GetSqlxSession().Query(ctx, q, req.GetArgs()...)
+	if err != nil {
+		return nil, fmt.Errorf("list template %q: %w", q, err)
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+	if rows.Next() {
+		row := &secureValueRow{}
+		err = rows.Scan(&row.UID,
+			&row.Namespace, &row.Name, &row.Title,
+			&row.Salt, &row.Value,
+			&row.Keeper, &row.Addr,
+			&row.Created, &row.CreatedBy,
+			&row.Updated, &row.UpdatedBy,
+			&row.Annotations, &row.Labels,
+			&row.APIs,
+		)
+		return row, err
+	}
+	return nil, fmt.Errorf("not found")
 }

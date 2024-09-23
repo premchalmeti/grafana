@@ -16,15 +16,15 @@ func TestSecureValuesQueries(t *testing.T) {
 					Name: "simple",
 					Data: &createSecureValue{
 						SQLTemplate: mocks.NewTestingSQLTemplate(),
-						Row: &secretValueRow{
+						Row: &secureValueRow{
 							UID:         "abc",
 							Namespace:   "ns",
 							Name:        "name",
-							Title:       "ttt",
-							Salt:        "rrr",
-							Value:       "vvv",
-							Keeper:      "",
-							Addr:        "",
+							Title:       "title",
+							Salt:        "salt",
+							Value:       "value",
+							Keeper:      "keeper",
+							Addr:        "addr",
 							Created:     1234,
 							CreatedBy:   "user:ryan",
 							Updated:     5678,
@@ -41,15 +41,15 @@ func TestSecureValuesQueries(t *testing.T) {
 					Name: "simple",
 					Data: &updateSecureValue{
 						SQLTemplate: mocks.NewTestingSQLTemplate(),
-						Row: &secretValueRow{
-							UID:         "abc",
+						Row: &secureValueRow{
+							UID:         "uid",
 							Namespace:   "ns",
 							Name:        "name",
 							Title:       "ttt",
-							Salt:        "rrr",
+							Salt:        "salt",
 							Value:       "vvv",
-							Keeper:      "",
-							Addr:        "",
+							Keeper:      "keeper",
+							Addr:        "addr",
 							Created:     1234,
 							CreatedBy:   "user:ryan",
 							Updated:     5678,

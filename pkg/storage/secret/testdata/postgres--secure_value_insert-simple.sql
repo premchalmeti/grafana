@@ -10,9 +10,9 @@ INSERT INTO "secure_value" (
   )
   VALUES (
     'abc',
-    'ns', 'name', 'ttt',
-    'rrr', 'vvv',
-    '', '',
+    'ns', 'name', 'title',
+    'salt', 'value',
+    'keeper', 'addr',
     1234, 'user:ryan',
     5678, 'user:cameron',
     '{"x":"XXXX"}', '{"a":"AAA", "b", "BBBB"}',

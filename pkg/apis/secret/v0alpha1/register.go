@@ -39,4 +39,19 @@ var SecureValuesResourceInfo = utils.NewResourceInfo(GROUP, VERSION,
 var (
 	// SchemeGroupVersion is group version used to register these objects
 	SchemeGroupVersion = schema.GroupVersion{Group: GROUP, Version: VERSION}
+
+	// SchemaBuilder is used by standard codegen
+	SchemeBuilder      runtime.SchemeBuilder
+	localSchemeBuilder = &SchemeBuilder
+	AddToScheme        = localSchemeBuilder.AddToScheme
 )
+
+// Adds the list of known types to the given scheme.
+func AddKnownTypes(scheme *runtime.Scheme, version string) {
+	scheme.AddKnownTypes(
+		schema.GroupVersion{Group: GROUP, Version: version},
+		&SecureValue{},
+		&SecureValueList{},
+		&SecureValueActivityList{},
+	)
+}

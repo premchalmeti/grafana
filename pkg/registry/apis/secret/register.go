@@ -54,23 +54,15 @@ func addKnownTypes(scheme *runtime.Scheme, gv schema.GroupVersion) {
 }
 
 func (b *SecretAPIBuilder) InstallSchema(scheme *runtime.Scheme) error {
-	gv := secret.SecureValuesResourceInfo.GroupVersion()
-	addKnownTypes(scheme, gv)
+	secret.AddKnownTypes(scheme, secret.VERSION)
 
-	// // Link this version to the internal representation.
-	// // This is used for server-side-apply (PATCH), and avoids the error:
-	// //   "no kind is registered for the type"
-	// addKnownTypes(scheme, schema.GroupVersion{
-	// 	Group:   gv.Group,
-	// 	Version: runtime.APIVersionInternal,
-	// })
+	// Link this version to the internal representation.
+	// This is used for server-side-apply (PATCH), and avoids the error:
+	// "no kind is registered for the type"
+	secret.AddKnownTypes(scheme, runtime.APIVersionInternal)
 
-	// If multiple versions exist, then register conversions from zz_generated.conversion.go
-	// if err := playlist.RegisterConversions(scheme); err != nil {
-	//   return err
-	// }
-	metav1.AddToGroupVersion(scheme, gv)
-	return scheme.SetVersionPriority(gv)
+	metav1.AddToGroupVersion(scheme, secret.SchemeGroupVersion)
+	return scheme.SetVersionPriority(secret.SchemeGroupVersion)
 }
 
 func (b *SecretAPIBuilder) GetAPIGroupInfo(
@@ -81,14 +73,16 @@ func (b *SecretAPIBuilder) GetAPIGroupInfo(
 ) (*genericapiserver.APIGroupInfo, error) {
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(secret.GROUP, scheme, metav1.ParameterCodec, codecs)
 
-	ss := &secretStorage{
-		store:          b.store,
-		resource:       secret.SecureValuesResourceInfo,
-		tableConverter: secret.SecureValuesResourceInfo.TableConverter(),
-	}
-
+	resource := secret.SecureValuesResourceInfo
 	storage := map[string]rest.Storage{}
-	storage[ss.resource.StoragePath()] = ss
+	storage[resource.StoragePath()] = &secretStorage{
+		store:          b.store,
+		resource:       resource,
+		tableConverter: resource.TableConverter(),
+	}
+	storage[resource.StoragePath("view")] = &secretView{
+		store: b.store,
+	}
 
 	apiGroupInfo.VersionedResourcesStorageMap[secret.VERSION] = storage
 	return &apiGroupInfo, nil
